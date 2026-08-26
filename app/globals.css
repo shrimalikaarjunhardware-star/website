@@ -1214,21 +1214,20 @@ h3 {
 
 .product-photo,
 .detail-photo {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .product-art:has(.product-photo) .product-short,
 .product-art:has(.product-photo) .product-tag {
-  text-shadow: 0 1px 8px rgba(0, 0, 0, .45);
+  text-shadow: none;
 }
 
 .detail-art:has(.detail-photo) span {
   z-index: 2;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, .45);
+  text-shadow: none;
 }
 
 .detail-gallery {
@@ -1244,7 +1243,7 @@ h3 {
 
 .detail-thumbnail {
   border: 1px solid var(--line);
-  background: #fff;
+  background: #f1f1ee;
   padding: 0;
   aspect-ratio: 1;
   overflow: hidden;
@@ -1266,10 +1265,9 @@ h3 {
 .detail-thumbnail img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
-
 .admin-gallery-manager {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
