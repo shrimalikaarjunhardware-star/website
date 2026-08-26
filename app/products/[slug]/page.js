@@ -59,25 +59,30 @@ export default async function ProductPage({ params }) {
                   <strong>{product.brand}</strong>
                 </div>
               ) : null}
-            
+              
               {product.features ? (
                 <div className="spec-features">
                   <span>FEATURES</span>
               
                   <strong>
-                    {product.features
-                      .split(",")
-                      .map((feature) => feature.trim())
+                    {(Array.isArray(product.features)
+                      ? product.features
+                      : String(product.features).split(",")
+                    )
+                      .map((feature) => String(feature).trim())
                       .filter(Boolean)
                       .map((feature, index) => (
-                        <span key={`${feature}-${index}`} className="spec-feature">
+                        <span
+                          key={`${feature}-${index}`}
+                          className="spec-feature"
+                        >
                           {feature}
                         </span>
                       ))}
                   </strong>
                 </div>
               ) : null}
-            
+              
               {product.packSizes ? (
                 <div>
                   <span>PACK SIZES</span>
