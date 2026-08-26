@@ -2457,3 +2457,162 @@ body {
     white-space: normal;
   }
 }
+
+/* =========================================================
+   FINAL QUICK CATEGORY GRID FIX
+   Overrides all previous .quick-grid / .quick-link rules
+   ========================================================= */
+
+.quick-links {
+  background: var(--orange);
+  color: #fff;
+  overflow: hidden;
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  width: 100%;
+  gap: 0;
+}
+
+.quick-link {
+  min-height: 112px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+
+  box-sizing: border-box;
+
+  /* Complete borders on EVERY box */
+  border: 1px solid rgba(255, 255, 255, 0.28);
+
+  /* Prevent doubled borders between adjacent boxes */
+  margin-right: -1px;
+  margin-bottom: -1px;
+
+  grid-column: auto !important;
+}
+
+.quick-link:first-child {
+  border-left: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.quick-link:hover {
+  background: var(--black);
+}
+
+.quick-number {
+  font-size: 9px;
+  font-weight: 900;
+  opacity: .65;
+}
+
+.quick-link strong {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+.quick-arrow {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+
+  font-size: 22px;
+  line-height: 1;
+  color: #fff;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+  .quick-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .quick-link {
+    grid-column: auto !important;
+    min-height: 112px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 720px) {
+
+  .quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-link,
+  .quick-link:nth-child(4),
+  .quick-link:nth-child(5),
+  .quick-link:nth-child(6) {
+    grid-column: auto !important;
+    min-height: 112px;
+    padding: 17px 16px;
+  }
+
+  /* Make sure NOTHING spans the full row */
+  .quick-link:nth-child(5),
+  .quick-link:nth-child(6) {
+    grid-column: auto !important;
+  }
+
+  .quick-link strong {
+    max-width: 85%;
+    font-size: 12px;
+    line-height: 1.15;
+  }
+
+  .quick-arrow {
+    right: 15px;
+    bottom: 15px;
+    font-size: 20px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 440px) {
+
+  .quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-link,
+  .quick-link:nth-child(4),
+  .quick-link:nth-child(5),
+  .quick-link:nth-child(6) {
+    grid-column: auto !important;
+    min-height: 104px;
+    padding: 15px 13px;
+  }
+
+  .quick-link strong {
+    font-size: 11px;
+  }
+
+  .quick-arrow {
+    right: 13px;
+    bottom: 13px;
+    font-size: 19px;
+  }
+
+}
