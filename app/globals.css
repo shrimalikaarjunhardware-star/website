@@ -2429,3 +2429,31 @@ body {
   outline: 0;
   box-shadow: none;
 }
+
+.spec-features {
+  align-items: flex-start;
+}
+
+.spec-features > strong {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 16px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.spec-feature {
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .spec-features > strong {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .spec-feature {
+    white-space: normal;
+  }
+}
