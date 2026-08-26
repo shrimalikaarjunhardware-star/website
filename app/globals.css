@@ -2261,3 +2261,21 @@ body {
   color: #666;
   line-height: 1.65;
 }
+
+.admin-gallery-item {
+  position: relative;
+}
+
+.admin-gallery-item.is-dragging {
+  opacity: 0.35;
+}
+
+.admin-gallery-drop-line {
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  left: -8px;
+  border-left: 3px dotted var(--orange);
+  z-index: 50;
+  pointer-events: none;
+}
