@@ -2,7 +2,10 @@ import Link from "next/link";
 
 export function ProductCard({ product }) {
   return (
-    <Link href={`/products/${product.slug}`} className="product-card pro-card">
+    <Link
+      href={`/products/${product.slug}`}
+      className="product-card pro-card"
+    >
       <div className="product-art">
         {product.image ? (
           <img
@@ -22,7 +25,9 @@ export function ProductCard({ product }) {
 
         <p>{product.description}</p>
 
-        <span className="product-link">VIEW PRODUCT →</span>
+        <span className="product-link">
+          VIEW PRODUCT →
+        </span>
       </div>
     </Link>
   );
