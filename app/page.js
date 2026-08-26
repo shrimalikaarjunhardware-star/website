@@ -30,7 +30,7 @@ export default async function Home() {
             <div className="hero-copy-block">
               <p className="kicker orange-kicker">BUILT FOR THE JOB</p>
               <h1>One-Stop Hardware & Paint Store. <span>Get it done.</span></h1>
-              <p className="hero-copy">Your local hardware and paint shop in Canacona, Goa — supplying paints, hardware, tools, waterproofing and project essentials for homes, painters, contractors and builders.</p>
+              <p className="hero-copy">Your local hardware and paint shop in Canacona, Goa — supplying paints, hardware, tools, waterproofing and project essentials for everyday projects, home rennovations to everyday consumers, painters, contractors and builders. We've got your covered </p>
               <div className="hero-actions">
                 <Link href="/products" className="btn btn-orange">SHOP PRODUCTS</Link>
                 <a href="https://wa.me/918310248961" target="_blank" rel="noreferrer" className="btn btn-outline-white">WHATSAPP US</a>
