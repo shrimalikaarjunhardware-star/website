@@ -80,6 +80,7 @@ export default function AdminPage() {
   const [imageFiles, setImageFiles] = useState([]);
   const [galleryImages, setGalleryImages] = useState([]);
   const [draggedGalleryId, setDraggedGalleryId] = useState(null);
+  const [galleryDropIndex, setGalleryDropIndex] = useState(null);
   const [slides, setSlides] = useState([]);
   const [slideFile, setSlideFile] = useState(null);
 
@@ -265,53 +266,91 @@ export default function AdminPage() {
   }
 
   function handleGalleryDragStart(event, imageId) {
+  event.stopPropagation();
+
   setDraggedGalleryId(imageId);
+  setGalleryDropIndex(null);
+
   event.dataTransfer.effectAllowed = "move";
   event.dataTransfer.setData("text/plain", imageId);
 }
 
-function handleGalleryDragOver(event) {
+function handleGalleryDragOver(event, index) {
   event.preventDefault();
+  event.stopPropagation();
+
+  if (!draggedGalleryId) return;
+
+  const rect = event.currentTarget.getBoundingClientRect();
+  const midpoint = rect.left + rect.width / 2;
+
+  let dropIndex = index;
+
+  if (event.clientX >= midpoint) {
+    dropIndex = index + 1;
+  }
+
+  const items = getOrderedGalleryItems();
+
+  const draggedIndex = items.findIndex(
+    (item) => item.id === draggedGalleryId
+  );
+
+  if (draggedIndex === -1) return;
+
+  if (draggedIndex < dropIndex) {
+    dropIndex -= 1;
+  }
+
+  setGalleryDropIndex(dropIndex);
   event.dataTransfer.dropEffect = "move";
 }
 
-function handleGalleryDrop(event, targetId) {
+function handleGalleryDrop(event) {
   event.preventDefault();
+  event.stopPropagation();
 
   const sourceId =
-    draggedGalleryId || event.dataTransfer.getData("text/plain");
+    draggedGalleryId ||
+    event.dataTransfer.getData("text/plain");
 
-  if (!sourceId || sourceId === targetId) {
+  if (!sourceId || galleryDropIndex === null) {
     setDraggedGalleryId(null);
+    setGalleryDropIndex(null);
     return;
   }
 
   const items = getOrderedGalleryItems();
 
-  const fromIndex = items.findIndex(
+  const sourceIndex = items.findIndex(
     (item) => item.id === sourceId
   );
 
-  const toIndex = items.findIndex(
-    (item) => item.id === targetId
-  );
-
-  if (fromIndex < 0 || toIndex < 0) {
+  if (sourceIndex === -1) {
     setDraggedGalleryId(null);
+    setGalleryDropIndex(null);
     return;
   }
 
   const next = [...items];
-  const [moved] = next.splice(fromIndex, 1);
+  const [movedItem] = next.splice(sourceIndex, 1);
 
-  next.splice(toIndex, 0, moved);
+  const safeIndex = Math.max(
+    0,
+    Math.min(galleryDropIndex, next.length)
+  );
+
+  next.splice(safeIndex, 0, movedItem);
 
   applyGalleryOrder(next);
+
   setDraggedGalleryId(null);
+  setGalleryDropIndex(null);
 }
 
 function handleGalleryDragEnd() {
   setDraggedGalleryId(null);
+  setGalleryDropIndex(null);
 }
 
   async function deleteGalleryImage(image) {
@@ -645,8 +684,9 @@ function handleGalleryDragEnd() {
                 <div>
                   <p className="kicker">PRODUCT GALLERY</p>
                   <p className="admin-muted">
-                    Drag images to change their order. The first image is the main product image.
-                    Use the arrows for precise placement, or remove an image individually.
+                    Drag an image and drop it where you want it.
+                    The dotted line shows exactly where the image will be placed.
+                    The first image is the main product image.
                   </p>
                 </div>
 
@@ -656,29 +696,46 @@ function handleGalleryDragEnd() {
                       className={`admin-gallery-item ${image.isMain ? "is-main" : ""} ${draggedGalleryId === image.id ? "is-dragging" : ""}`}
                       key={image.id}
                       draggable
-                      onDragStart={(event) => handleGalleryDragStart(event, image.id)}
-                      onDragOver={handleGalleryDragOver}
-                      onDrop={(event) => handleGalleryDrop(event, image.id)}
+                      onDragStart={(event) =>
+                        handleGalleryDragStart(event, image.id)
+                      }
+                      onDragOver={(event) =>
+                        handleGalleryDragOver(event, index)
+                      }
+                      onDrop={handleGalleryDrop}
                       onDragEnd={handleGalleryDragEnd}
                     >
+                      {galleryDropIndex === index &&
+                      draggedGalleryId !== image.id ? (
+                        <div className="admin-gallery-drop-line" />
+                      ) : null}
+                
                       <div className="admin-gallery-image-wrap">
                         <img src={image.image_url} alt="" />
-                        {image.isMain ? <span className="admin-gallery-main">MAIN IMAGE</span> : null}
-                        <span className="admin-gallery-number">{index + 1}</span>
+                
+                        {image.isMain ? (
+                          <span className="admin-gallery-main">
+                            MAIN IMAGE
+                          </span>
+                        ) : null}
+                
+                        <span className="admin-gallery-number">
+                          {index + 1}
+                        </span>
                       </div>
-
+                
                       <div className="admin-gallery-controls">
-                          <button
-                            type="button"
-                            className="danger"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              deleteGalleryImage(image);
-                            }}
-                          >
-                            REMOVE
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          className="danger"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            deleteGalleryImage(image);
+                          }}
+                        >
+                          REMOVE
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
