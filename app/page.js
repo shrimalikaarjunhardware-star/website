@@ -5,6 +5,7 @@ import { Header, Footer } from "./components/SiteChrome";
 import { siteConfig } from "../lib/siteConfig";
 import { getHomepageSlides } from "../lib/homepage-server";
 import { HeroCarousel } from "./components/HeroCarousel";
+import { ProductCard } from "./components/ProductCard";
 
 const tradeItems = [
   ["CONTRACTORS", "Project materials, paint and hardware for the job."],
@@ -74,12 +75,22 @@ export default async function Home() {
               <Link href="/products" className="section-link">VIEW ALL PRODUCTS ↗</Link>
             </div>
             <div className="product-grid pro-grid">
-              {products.filter((p) => p.featured).slice(0, 6).map((p, i) => (
-                <Link key={p.slug} href={`/products/${p.slug}`} className="product-card pro-card">
-                  <div className={`product-art ${p.tone || "orange"}`}>{p.image ? <img src={p.image} alt={p.name} loading="lazy" /> : <span className="product-short">{p.short}</span>}<span className="product-tag">{String(i + 1).padStart(2, "0")}</span></div>
-                  <div className="product-info"><span className="product-category">{p.category}</span><h3>{p.name}</h3><p>{p.description}</p><span className="product-link">VIEW PRODUCT →</span></div>
-                </Link>
-              ))}
+  {products.filter((p) => p.featured).slice(0, 6).map((p) => (
+    <ProductCard key={p.slug} product={p} />
+  ))}
+
+  {!products.some((p) => p.featured) ? (
+    <div className="empty-state">
+      <strong>Featured products are coming soon.</strong>
+      <p>
+        Browse the full catalogue or contact the store for current availability.
+      </p>
+      <Link href="/products" className="btn btn-black">
+        BROWSE PRODUCTS
+      </Link>
+    </div>
+  ) : null}
+</div>
               {!products.some((p) => p.featured) ? <div className="empty-state"><strong>Featured products are coming soon.</strong><p>Browse the full catalogue or contact the store for current availability.</p><Link href="/products" className="btn btn-black">BROWSE PRODUCTS</Link></div> : null}
             </div>
           </div>
