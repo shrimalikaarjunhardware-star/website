@@ -652,7 +652,48 @@ h3 {
   color: #656662;
   max-width: 570px;
 }
-.spec-list{border-top:2px solid var(--black);margin:32px 0}.spec-list div{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding:14px 0;font-size:10px;font-weight:900;letter-spacing:.04em}.spec-list span{color:#777}.spec-list strong{text-align:right}
+.spec-list {
+  border-top: 2px solid var(--black);
+  margin: 32px 0;
+}
+
+.spec-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+
+.spec-list > div > span {
+  color: #777;
+}
+
+.spec-list > div > strong {
+  color: var(--black);
+  text-align: right;
+}
+
+.spec-features {
+  align-items: flex-start;
+}
+
+.spec-features > strong {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 16px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.spec-feature {
+  color: var(--black);
+  white-space: nowrap;
+}
 
 .brand-hero{background:var(--black);color:#fff;padding:65px;display:grid;grid-template-columns:1fr 300px;gap:50px;align-items:center;margin-bottom:65px;border-left:10px solid var(--orange)}.brand-hero .lead{color:#b9bab7}.opus-mark-block{height:230px;display:grid;place-items:center;border:2px solid var(--orange);color:var(--orange);font-family:Archivo Black,sans-serif;font-size:48px;letter-spacing:.05em}
 
