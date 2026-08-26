@@ -69,32 +69,41 @@ export default async function Home() {
         
 
         <section className="section products-section">
-          <div className="container">
-            <div className="section-head">
-              <div><p className="kicker">FEATURED PRODUCTS</p><h2>Ready for the next job.</h2></div>
-              <Link href="/products" className="section-link">VIEW ALL PRODUCTS ↗</Link>
+            <div className="container">
+              <div className="section-head">
+                <div>
+                  <p className="kicker">FEATURED PRODUCTS</p>
+                  <h2>Ready for the next job.</h2>
+                </div>
+          
+                <Link href="/products" className="section-link">
+                  VIEW ALL PRODUCTS ↗
+                </Link>
+              </div>
+          
+              <div className="product-grid pro-grid">
+                {products
+                  .filter((p) => p.featured)
+                  .slice(0, 6)
+                  .map((p) => (
+                    <ProductCard key={p.slug} product={p} />
+                  ))}
+          
+                {!products.some((p) => p.featured) ? (
+                  <div className="empty-state">
+                    <strong>Featured products are coming soon.</strong>
+                    <p>
+                      Browse the full catalogue or contact the store for current
+                      availability.
+                    </p>
+                    <Link href="/products" className="btn btn-black">
+                      BROWSE PRODUCTS
+                    </Link>
+                  </div>
+                ) : null}
+              </div>
             </div>
-            <div className="product-grid pro-grid">
-  {products.filter((p) => p.featured).slice(0, 6).map((p) => (
-    <ProductCard key={p.slug} product={p} />
-  ))}
-
-  {!products.some((p) => p.featured) ? (
-    <div className="empty-state">
-      <strong>Featured products are coming soon.</strong>
-      <p>
-        Browse the full catalogue or contact the store for current availability.
-      </p>
-      <Link href="/products" className="btn btn-black">
-        BROWSE PRODUCTS
-      </Link>
-    </div>
-  ) : null}
-</div>
-              {!products.some((p) => p.featured) ? <div className="empty-state"><strong>Featured products are coming soon.</strong><p>Browse the full catalogue or contact the store for current availability.</p><Link href="/products" className="btn btn-black">BROWSE PRODUCTS</Link></div> : null}
-            </div>
-          </div>
-        </section>
+          </section>
 
         <section className="opus-feature">
           <div className="container">
