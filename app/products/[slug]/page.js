@@ -43,11 +43,65 @@ export default async function ProductPage({ params }) {
               <p className="detail-copy">{product.longDescription}</p>
 
               <div className="spec-list">
-                <div><span>CATEGORY</span><strong>{category?.name || product.category}</strong></div>
-                <div><span>PRODUCT TYPE</span><strong>{subcategory?.name || "GENERAL"}</strong></div>
-                <div><span>BRAND</span><strong>{product.brand || "VARIOUS"}</strong></div>
-                <div><span>AVAILABILITY</span><strong>{product.available === false ? "CHECK STORE" : "CONTACT STORE"}</strong></div>
+              <div>
+                <span>CATEGORY</span>
+                <strong>{category?.name || product.category}</strong>
               </div>
+            
+              <div>
+                <span>PRODUCT TYPE</span>
+                <strong>{subcategory?.name || "GENERAL"}</strong>
+              </div>
+            
+              {product.brand ? (
+                <div>
+                  <span>BRAND</span>
+                  <strong>{product.brand}</strong>
+                </div>
+              ) : null}
+            
+              {product.features ? (
+                <div>
+                  <span>FEATURES</span>
+                  <strong>{product.features}</strong>
+                </div>
+              ) : null}
+            
+              {product.packSizes ? (
+                <div>
+                  <span>PACK SIZES</span>
+                  <strong>{product.packSizes}</strong>
+                </div>
+              ) : null}
+            
+              {product.finish ? (
+                <div>
+                  <span>FINISH</span>
+                  <strong>{product.finish}</strong>
+                </div>
+              ) : null}
+            
+              {product.coverage ? (
+                <div>
+                  <span>COVERAGE</span>
+                  <strong>{product.coverage}</strong>
+                </div>
+              ) : null}
+            
+              {product.warranty ? (
+                <div>
+                  <span>WARRANTY / GUARANTEE</span>
+                  <strong>{product.warranty}</strong>
+                </div>
+              ) : null}
+            
+              <div>
+                <span>AVAILABILITY</span>
+                <strong>
+                  {product.available === false ? "CHECK STORE" : "CONTACT STORE"}
+                </strong>
+              </div>
+            </div>
 
               <div className="detail-actions">
                 <a
