@@ -61,9 +61,20 @@ export default async function ProductPage({ params }) {
               ) : null}
             
               {product.features ? (
-                <div>
+                <div className="spec-features">
                   <span>FEATURES</span>
-                  <strong>{product.features}</strong>
+              
+                  <strong>
+                    {product.features
+                      .split(",")
+                      .map((feature) => feature.trim())
+                      .filter(Boolean)
+                      .map((feature, index) => (
+                        <span key={`${feature}-${index}`} className="spec-feature">
+                          {feature}
+                        </span>
+                      ))}
+                  </strong>
                 </div>
               ) : null}
             
