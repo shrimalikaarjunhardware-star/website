@@ -264,33 +264,55 @@ export default function AdminPage() {
     );
   }
 
-  function moveGalleryImage(id, direction) {
-    const items = getOrderedGalleryItems();
-    const index = items.findIndex((item) => item.id === id);
-    const nextIndex = index + direction;
+  function handleGalleryDragStart(event, imageId) {
+  setDraggedGalleryId(imageId);
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", imageId);
+}
 
-    if (index < 0 || nextIndex < 0 || nextIndex >= items.length) return;
+function handleGalleryDragOver(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "move";
+}
 
-    const next = [...items];
-    [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
-    applyGalleryOrder(next);
-  }
+function handleGalleryDrop(event, targetId) {
+  event.preventDefault();
 
-  function handleGalleryDrop(targetId) {
-    if (!draggedGalleryId || draggedGalleryId === targetId) return;
+  const sourceId =
+    draggedGalleryId || event.dataTransfer.getData("text/plain");
 
-    const items = getOrderedGalleryItems();
-    const fromIndex = items.findIndex((item) => item.id === draggedGalleryId);
-    const toIndex = items.findIndex((item) => item.id === targetId);
-
-    if (fromIndex < 0 || toIndex < 0) return;
-
-    const next = [...items];
-    const [moved] = next.splice(fromIndex, 1);
-    next.splice(toIndex, 0, moved);
-    applyGalleryOrder(next);
+  if (!sourceId || sourceId === targetId) {
     setDraggedGalleryId(null);
+    return;
   }
+
+  const items = getOrderedGalleryItems();
+
+  const fromIndex = items.findIndex(
+    (item) => item.id === sourceId
+  );
+
+  const toIndex = items.findIndex(
+    (item) => item.id === targetId
+  );
+
+  if (fromIndex < 0 || toIndex < 0) {
+    setDraggedGalleryId(null);
+    return;
+  }
+
+  const next = [...items];
+  const [moved] = next.splice(fromIndex, 1);
+
+  next.splice(toIndex, 0, moved);
+
+  applyGalleryOrder(next);
+  setDraggedGalleryId(null);
+}
+
+function handleGalleryDragEnd() {
+  setDraggedGalleryId(null);
+}
 
   async function deleteGalleryImage(image) {
     if (!window.confirm("Remove this product image?")) return;
@@ -634,10 +656,10 @@ export default function AdminPage() {
                       className={`admin-gallery-item ${image.isMain ? "is-main" : ""} ${draggedGalleryId === image.id ? "is-dragging" : ""}`}
                       key={image.id}
                       draggable
-                      onDragStart={() => setDraggedGalleryId(image.id)}
-                      onDragEnd={() => setDraggedGalleryId(null)}
-                      onDragOver={(event) => event.preventDefault()}
-                      onDrop={() => handleGalleryDrop(image.id)}
+                      onDragStart={(event) => handleGalleryDragStart(event, image.id)}
+                      onDragOver={handleGalleryDragOver}
+                      onDrop={(event) => handleGalleryDrop(event, image.id)}
+                      onDragEnd={handleGalleryDragEnd}
                     >
                       <div className="admin-gallery-image-wrap">
                         <img src={image.image_url} alt="" />
@@ -646,34 +668,17 @@ export default function AdminPage() {
                       </div>
 
                       <div className="admin-gallery-controls">
-                        <button
-                          type="button"
-                          onClick={() => moveGalleryImage(image.id, -1)}
-                          disabled={index === 0}
-                          aria-label="Move image left"
-                          title="Move earlier"
-                        >
-                          ←
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => moveGalleryImage(image.id, 1)}
-                          disabled={index === items.length - 1}
-                          aria-label="Move image right"
-                          title="Move later"
-                        >
-                          →
-                        </button>
-
-                        <button
-                          type="button"
-                          className="danger"
-                          onClick={() => deleteGalleryImage(image)}
-                        >
-                          REMOVE
-                        </button>
-                      </div>
+                          <button
+                            type="button"
+                            className="danger"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              deleteGalleryImage(image);
+                            }}
+                          >
+                            REMOVE
+                          </button>
+                        </div>
                     </div>
                   ))}
                 </div>
