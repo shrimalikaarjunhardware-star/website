@@ -83,6 +83,8 @@ export default function AdminPage() {
   const [galleryDropIndex, setGalleryDropIndex] = useState(null);
   const [slides, setSlides] = useState([]);
   const [slideFile, setSlideFile] = useState(null);
+  const [draggedSlideId, setDraggedSlideId] = useState(null);
+  const [slideDropIndex, setSlideDropIndex] = useState(null);
 
   const formErrors = useMemo(
     () => validateProduct(form, Boolean(editingId), imageFiles.length > 0),
@@ -548,8 +550,137 @@ function handleGalleryDragEnd() {
       setSlideFile(null); setNotice("Hero image added."); await loadSlides();
     } catch(e){setError(e.message||"Could not add hero image.");} finally{setSaving(false);}
   }
-  async function toggleSlide(slide){ const {error:e}=await supabase.from("homepage_slides").update({active:!slide.active}).eq("id",slide.id); if(e)setError(e.message); else{setNotice(slide.active?"Hero image hidden.":"Hero image is live.");loadSlides();} }
-  async function deleteSlide(slide){ if(!window.confirm("Remove this hero image?"))return; const {error:e}=await supabase.from("homepage_slides").delete().eq("id",slide.id); if(e)setError(e.message); else{setNotice("Hero image removed.");loadSlides();} }
+  async function toggleSlide(slide) {
+  const { error: e } = await supabase
+    .from("homepage_slides")
+    .update({ active: !slide.active })
+    .eq("id", slide.id);
+
+  if (e) {
+    setError(e.message);
+  } else {
+    setNotice(
+      slide.active
+        ? "Hero image hidden."
+        : "Hero image is live."
+    );
+    await loadSlides();
+  }
+}
+
+async function deleteSlide(slide) {
+  if (!window.confirm("Remove this hero image?")) return;
+
+  const { error: e } = await supabase
+    .from("homepage_slides")
+    .delete()
+    .eq("id", slide.id);
+
+  if (e) {
+    setError(e.message);
+  } else {
+    setNotice("Hero image removed.");
+    await loadSlides();
+  }
+}
+
+function handleSlideDragStart(event, slideId) {
+  setDraggedSlideId(slideId);
+  setSlideDropIndex(null);
+
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", slideId);
+}
+
+function handleSlideDragOver(event, index) {
+  event.preventDefault();
+
+  if (!draggedSlideId) return;
+
+  const rect = event.currentTarget.getBoundingClientRect();
+  const midpoint = rect.top + rect.height / 2;
+
+  let dropIndex = index;
+
+  if (event.clientY >= midpoint) {
+    dropIndex = index + 1;
+  }
+
+  setSlideDropIndex(dropIndex);
+  event.dataTransfer.dropEffect = "move";
+}
+
+async function handleSlideDrop(event) {
+  event.preventDefault();
+
+  const sourceId =
+    draggedSlideId ||
+    event.dataTransfer.getData("text/plain");
+
+  if (!sourceId || slideDropIndex === null) {
+    setDraggedSlideId(null);
+    setSlideDropIndex(null);
+    return;
+  }
+
+  const sourceIndex = slides.findIndex(
+    (slide) => slide.id === sourceId
+  );
+
+  if (sourceIndex === -1) {
+    setDraggedSlideId(null);
+    setSlideDropIndex(null);
+    return;
+  }
+
+  const next = [...slides];
+  const [movedSlide] = next.splice(sourceIndex, 1);
+
+  let safeIndex = Math.max(
+    0,
+    Math.min(slideDropIndex, next.length)
+  );
+
+  next.splice(safeIndex, 0, movedSlide);
+
+  setSlides(next);
+  setDraggedSlideId(null);
+  setSlideDropIndex(null);
+
+  try {
+    setSaving(true);
+
+    const results = await Promise.all(
+      next.map((slide, index) =>
+        supabase
+          .from("homepage_slides")
+          .update({ sort_order: index })
+          .eq("id", slide.id)
+      )
+    );
+
+    const failed = results.find((result) => result.error);
+
+    if (failed?.error) {
+      throw failed.error;
+    }
+
+    setNotice("Hero image order saved.");
+    await loadSlides();
+  } catch (error) {
+    setError(
+      error.message || "Could not save hero image order."
+    );
+    await loadSlides();
+  } finally {
+    setSaving(false);
+  }
+}
+
+function handleSlideDragEnd() {
+  setDraggedSlideId(null);
+  setSlideDropIndex(null);
+}
 
   const filteredProducts = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -821,9 +952,72 @@ function handleGalleryDragEnd() {
             <button className="btn btn-orange admin-submit" type="submit" disabled={saving}>{saving?"UPLOADING…":"ADD HERO IMAGE"}</button>
           </form>
           <div className="admin-slide-list">
-            {slides.map(slide=><article className="admin-slide-row" key={slide.id}><img src={slide.image} alt=""/><div><strong>{slide.title||"Hero image"}</strong><span>{slide.active?"LIVE":"HIDDEN"}</span></div><button onClick={()=>toggleSlide(slide)}>{slide.active?"HIDE":"SHOW"}</button><button className="danger" onClick={()=>deleteSlide(slide)}>DELETE</button></article>)}
-            {!slides.length?<p className="admin-muted">No custom hero images yet. The current site hero will remain visible until you add one.</p>:null}
-          </div>
+  {slides.map((slide, index) => (
+    <article
+      className={`admin-slide-row ${
+        draggedSlideId === slide.id ? "is-dragging" : ""
+      }`}
+      key={slide.id}
+      draggable
+      onDragStart={(event) =>
+        handleSlideDragStart(event, slide.id)
+      }
+      onDragOver={(event) =>
+        handleSlideDragOver(event, index)
+      }
+      onDrop={handleSlideDrop}
+      onDragEnd={handleSlideDragEnd}
+    >
+      <div className="admin-slide-drag" aria-hidden="true">
+        ☰
+      </div>
+
+      <div className="admin-slide-number">
+        {index + 1}
+      </div>
+
+      <img
+        src={slide.image}
+        alt=""
+        className="admin-slide-image"
+      />
+
+      <div className="admin-slide-info">
+        <strong>
+          {slide.title || `Hero image ${index + 1}`}
+        </strong>
+
+        <span>
+          {slide.active ? "LIVE" : "HIDDEN"}
+        </span>
+      </div>
+
+      <div className="admin-slide-actions">
+        <button
+          type="button"
+          onClick={() => toggleSlide(slide)}
+        >
+          {slide.active ? "HIDE" : "SHOW"}
+        </button>
+
+        <button
+          type="button"
+          className="danger"
+          onClick={() => deleteSlide(slide)}
+        >
+          DELETE
+        </button>
+      </div>
+    </article>
+  ))}
+
+  {!slides.length ? (
+    <p className="admin-muted">
+      No custom hero images yet. The current site hero will remain
+      visible until you add one.
+    </p>
+  ) : null}
+</div>
         </section>
 
         <section className="admin-card">
