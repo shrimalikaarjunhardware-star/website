@@ -28,7 +28,7 @@ export default async function Home() {
           <div className="hero-photo-overlay" />
           <div className="container hero-content">
             <div className="hero-copy-block">
-              <p className="kicker orange-kicker">BUILT FOR THE JOB</p>
+              <p className="kicker orange-kicker">WELCOME TO OUR NEW</p>
               <h1>One-Stop <span>Hardware & Paint Store.</span></h1>
               <p className="hero-copy">Your local hardware and paint shop in Canacona, Goa — supplying paints, hardware, tools, waterproofing and project essentials for everyday projects, home rennovations to everyday consumers, painters, contractors and builders. We've got your covered </p>
               <div className="hero-actions">
