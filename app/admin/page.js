@@ -317,7 +317,7 @@ export default function AdminPage() {
 
       if (result.error) throw result.error;
 
-      const productId = editingId || result.data?.[0]?.id;
+      const productId = editingId || result.data?.id;
       if (!productId) throw new Error("Product was saved, but its ID could not be determined.");
 
       const galleryUploads = uploadedImages.slice(1);
