@@ -159,7 +159,6 @@ h3 {
 .quick-link:hover{background:var(--black)}
 .quick-number{font-size:9px;font-weight:900;opacity:.65}
 .quick-link strong{font-size:12px;letter-spacing:.04em}
-.quick-arrow{align-self:flex-end;font-size:22px;line-height:.6}
 
 .section{padding:88px 0}
 .dark-section{background:var(--black);color:#fff}
@@ -984,10 +983,6 @@ h3 {
   letter-spacing: 0.04em;
 }
 
-.quick-arrow {
-  font-size: 24px;
-}
-
 
 /* Section utility links */
 .section-link {
@@ -1706,9 +1701,10 @@ h3 {
 
 .quick-arrow {
   position: absolute;
+  top: 18px;
   right: 20px;
-  bottom: 18px;
   font-size: 22px;
+  line-height: 1;
   color: #fff;
 }
 
@@ -2397,10 +2393,11 @@ body {
   }
 
   .quick-arrow {
-    right: 15px;
-    bottom: 15px;
-    font-size: 20px;
-  }
+  top: 15px;
+  right: 15px;
+  bottom: auto;
+  font-size: 20px;
+}
 
   /* Sections */
   .section {
