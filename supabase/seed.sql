@@ -1,4 +1,0 @@
--- Starter seed intentionally empty.
--- Products are now added from /admin.
--- If an old starter product is still present in your database, run:
--- supabase/remove-placeholder-products.sql
