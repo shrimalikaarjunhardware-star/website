@@ -70,7 +70,7 @@ export default async function Home() {
         <section className="section products-section">
           <div className="container">
             <div className="section-head">
-              <div><p className="kicker">FEATURED PRODUCTS</p><h2>Ready for the next job.</h2></div>
+              <div><p className="kicker">FEATURED PRODUCTS</p><h2>Adding colour to life.</h2></div>
               <Link href="/products" className="section-link">VIEW ALL PRODUCTS ↗</Link>
             </div>
             <div className="product-grid pro-grid">
