@@ -48,7 +48,12 @@ function validateProduct(form, isEditing, hasNewImages = false) {
   if (!form.name.trim()) errors.name = "Product name is required.";
   if (!form.brand.trim()) errors.brand = "Brand is required.";
   if (!form.categorySlug) errors.categorySlug = "Choose a category.";
-  if (!form.subcategory) errors.subcategory = "Choose a subcategory.";
+  if (
+  !form.subcategory ||
+  (Array.isArray(form.subcategory) && form.subcategory.length === 0)
+) {
+  errors.subcategory = "Choose at least one subcategory.";
+}
   if (!form.description.trim()) errors.description = "A short description is required.";
   if (!form.image.trim() && !hasNewImages) errors.image = "At least one product image is required.";
 
@@ -421,7 +426,16 @@ function handleGalleryDragEnd() {
       if (!imageUrl) throw new Error("At least one product image is required.");
 
       const category = getCategory(form.categorySlug);
-      const subcategory = category?.subcategories.find((item) => item.slug === form.subcategory);
+      const selectedSubcategories = Array.isArray(form.subcategory)
+        ? form.subcategory
+        : form.subcategory
+          ? [form.subcategory]
+          : [];
+      
+      const selectedSubcategoryNames =
+        category?.subcategories
+          .filter((item) => selectedSubcategories.includes(item.slug))
+          .map((item) => item.name) || [];
 
       const payload = {
         slug: slugify(form.name),
@@ -431,8 +445,8 @@ function handleGalleryDragEnd() {
         range: form.range.trim() || null,
         category: category?.name || form.categorySlug,
         category_slug: form.categorySlug,
-        subcategory: form.subcategory,
-        subcategory_name: subcategory?.name || form.subcategory,
+        subcategory: selectedSubcategories,
+subcategory_name: selectedSubcategoryNames.join(", "),
         description: form.description.trim(),
         long_description: form.longDescription.trim() || form.description.trim(),
         features: parseList(form.features),
@@ -777,21 +791,88 @@ function handleSlideDragEnd() {
               </label>
 
               <label>
-                Category *
-                <select aria-invalid={Boolean(formErrors.categorySlug)} value={form.categorySlug} onChange={(e) => setForm({ ...form, categorySlug: e.target.value, subcategory: "" })}>
-                  <option value="">Choose category</option>
-                  {categories.map((category) => <option key={category.slug} value={category.slug}>{category.name}</option>)}
-                </select>
-                {formErrors.categorySlug ? <small className="admin-field-error">{formErrors.categorySlug}</small> : null}
-              </label>
+              Category *
+              <select
+                aria-invalid={Boolean(formErrors.categorySlug)}
+                value={form.categorySlug}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    categorySlug: e.target.value,
+                    subcategory: [],
+                  })
+                }
+              >
+                <option value="">Choose category</option>
+            
+                {categories.map((category) => (
+                  <option key={category.slug} value={category.slug}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            
+              {formErrors.categorySlug ? (
+                <small className="admin-field-error">
+                  {formErrors.categorySlug}
+                </small>
+              ) : null}
+            </label>
 
-              <label>
-                Subcategory *
-                <select aria-invalid={Boolean(formErrors.subcategory)} value={form.subcategory} onChange={(e) => setForm({ ...form, subcategory: e.target.value })} disabled={!selectedCategory}>
-                  <option value="">{selectedCategory ? "Choose subcategory" : "Choose a category first"}</option>
-                  {selectedCategory?.subcategories.map((item) => <option key={item.slug} value={item.slug}>{item.name}</option>)}
-                </select>
-                {formErrors.subcategory ? <small className="admin-field-error">{formErrors.subcategory}</small> : null}
+              <label className="admin-subcategory-field">
+                Subcategories *
+              
+                {!selectedCategory ? (
+                  <div className="admin-subcategory-empty">
+                    Choose a category first
+                  </div>
+                ) : (
+                  <div className="admin-subcategory-options">
+                    {selectedCategory.subcategories.map((item) => {
+                      const selected = Array.isArray(form.subcategory)
+                        ? form.subcategory.includes(item.slug)
+                        : form.subcategory === item.slug;
+              
+                      return (
+                        <label
+                          key={item.slug}
+                          className={`admin-subcategory-option ${
+                            selected ? "is-selected" : ""
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selected}
+                            onChange={(event) => {
+                              const current = Array.isArray(form.subcategory)
+                                ? form.subcategory
+                                : form.subcategory
+                                  ? [form.subcategory]
+                                  : [];
+              
+                              const next = event.target.checked
+                                ? [...current, item.slug]
+                                : current.filter((slug) => slug !== item.slug);
+              
+                              setForm({
+                                ...form,
+                                subcategory: next,
+                              });
+                            }}
+                          />
+              
+                          <span>{item.name}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              
+                {formErrors.subcategory ? (
+                  <small className="admin-field-error">
+                    {formErrors.subcategory}
+                  </small>
+                ) : null}
               </label>
 
               <label>
