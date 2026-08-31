@@ -19,7 +19,14 @@ export function generateStaticParams() {
 function filterProducts(items, { subcategory = "", brand = "", q = "", sort = "featured" }) {
   const query = q.trim().toLowerCase();
   const filtered = items.filter((product) => {
-    const matchesSubcategory = !subcategory || product.subcategory === subcategory;
+    const productSubcategories = Array.isArray(product.subcategory)
+  ? product.subcategory
+  : product.subcategory
+    ? [product.subcategory]
+    : [];
+
+const matchesSubcategory =
+  !subcategory || productSubcategories.includes(subcategory);
     const matchesBrand = !brand || product.brand === brand;
     const haystack = `${product.name} ${product.brand} ${product.description}`.toLowerCase();
     const matchesSearch = !query || haystack.includes(query);
