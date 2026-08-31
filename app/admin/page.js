@@ -152,7 +152,17 @@ export default function AdminPage() {
       .order("name", { ascending: true });
 
     if (fetchError) setError(fetchError.message);
-    else setProducts(data || []);
+    else
+  setProducts(
+    (data || []).map((product) => ({
+      ...product,
+      subcategory: Array.isArray(product.subcategory)
+        ? product.subcategory
+        : product.subcategory
+          ? [product.subcategory]
+          : [],
+    }))
+  );
 
     setLoadingProducts(false);
   }
