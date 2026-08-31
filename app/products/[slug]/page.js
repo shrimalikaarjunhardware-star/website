@@ -46,7 +46,7 @@ export default async function ProductPage({ params }) {
                   <span>CATEGORY</span>
                   <strong>{category?.name || product.category}</strong>
                 </div>
-             <div>
+             <div className="spec-row">
                 <span>PRODUCT TYPE</span>
                 <strong>
                   {Array.isArray(product.subcategory)
