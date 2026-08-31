@@ -38,6 +38,41 @@ function parseList(value) {
     .filter(Boolean);
 }
 
+function normalizeSubcategories(value) {
+  if (Array.isArray(value)) {
+    return value.filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+
+    if (!trimmed) return [];
+
+    try {
+      const parsed = JSON.parse(trimmed);
+
+      if (Array.isArray(parsed)) {
+        return parsed.filter(Boolean);
+      }
+    } catch {
+      // Not JSON; continue with normal string handling.
+    }
+
+    // Handle a PostgreSQL-style array such as {interior,exterior}.
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      return trimmed
+        .slice(1, -1)
+        .split(",")
+        .map((item) => item.trim().replace(/^"|"$/g, ""))
+        .filter(Boolean);
+    }
+
+    return [trimmed];
+  }
+
+  return [];
+}
+
 function getCategory(slug) {
   return categories.find((item) => item.slug === slug);
 }
@@ -142,30 +177,28 @@ export default function AdminPage() {
   }
 
   async function loadProducts() {
-    setLoadingProducts(true);
-    setError("");
+  setLoadingProducts(true);
+  setError("");
 
-    const { data, error: fetchError } = await supabase
-      .from("products")
-      .select("*")
-      .order("featured", { ascending: false })
-      .order("name", { ascending: true });
+  const { data, error: fetchError } = await supabase
+    .from("products")
+    .select("*")
+    .order("featured", { ascending: false })
+    .order("name", { ascending: true });
 
-    if (fetchError) setError(fetchError.message);
-    else
-  setProducts(
-    (data || []).map((product) => ({
-      ...product,
-      subcategory: Array.isArray(product.subcategory)
-        ? product.subcategory
-        : product.subcategory
-          ? [product.subcategory]
-          : [],
-    }))
-  );
-
-    setLoadingProducts(false);
+  if (fetchError) {
+    setError(fetchError.message);
+  } else {
+    setProducts(
+      (data || []).map((product) => ({
+        ...product,
+        subcategory: normalizeSubcategories(product.subcategory),
+      }))
+    );
   }
+
+  setLoadingProducts(false);
+}
 
   async function loadSlides() {
     const { data: slideData, error: slideError } = await supabase
@@ -206,35 +239,37 @@ export default function AdminPage() {
   }
 
   async function startEdit(product) {
-    setEditingId(product.id);
-    setForm({
-      name: product.name || "",
-      brand: product.brand || "",
-      range: product.range || "",
-      categorySlug: product.category_slug || "",
-      subcategory: Array.isArray(product.subcategory)
-  ? product.subcategory
-  : product.subcategory
-    ? [product.subcategory]
-    : [],
-      description: product.description || "",
-      longDescription: product.long_description || "",
-      features: Array.isArray(product.features) ? product.features.join(", ") : "",
-      packSizes: Array.isArray(product.pack_sizes) ? product.pack_sizes.join(", ") : "",
-      finish: product.finish || "",
-      coverage: product.coverage || "",
-      warranty: product.warranty || "",
-      manufacturerUrl: product.manufacturer_url || "",
-      image: product.image || "",
-      available: product.available !== false,
-      featured: product.featured === true,
-    });
-    setImageFiles([]);
-    setError("");
-    setNotice("");
-    await loadGalleryImages(product.id);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  setEditingId(product.id);
+
+  setForm({
+    name: product.name || "",
+    brand: product.brand || "",
+    range: product.range || "",
+    categorySlug: product.category_slug || "",
+    subcategory: normalizeSubcategories(product.subcategory),
+    description: product.description || "",
+    longDescription: product.long_description || "",
+    features: Array.isArray(product.features)
+      ? product.features.join(", ")
+      : "",
+    packSizes: Array.isArray(product.pack_sizes)
+      ? product.pack_sizes.join(", ")
+      : "",
+    finish: product.finish || "",
+    coverage: product.coverage || "",
+    warranty: product.warranty || "",
+    manufacturerUrl: product.manufacturer_url || "",
+    image: product.image || "",
+    available: product.available !== false,
+    featured: product.featured === true,
+  });
+
+  setImageFiles([]);
+  setError("");
+  setNotice("");
+  await loadGalleryImages(product.id);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
   async function uploadImages(files) {
     const uploaded = [];
