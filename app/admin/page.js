@@ -202,7 +202,11 @@ export default function AdminPage() {
       brand: product.brand || "",
       range: product.range || "",
       categorySlug: product.category_slug || "",
-      subcategory: product.subcategory || "",
+      subcategory: Array.isArray(product.subcategory)
+  ? product.subcategory
+  : product.subcategory
+    ? [product.subcategory]
+    : [],
       description: product.description || "",
       longDescription: product.long_description || "",
       features: Array.isArray(product.features) ? product.features.join(", ") : "",
