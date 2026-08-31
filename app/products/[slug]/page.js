@@ -47,10 +47,17 @@ export default async function ProductPage({ params }) {
                   <span>CATEGORY</span>
                   <strong>{category?.name || product.category}</strong>
                 </div>
-                <div className="spec-row">
-                  <span>PRODUCT TYPE</span>
-                  <strong>{subcategory?.name || "GENERAL"}</strong>
-                </div>
+              <div>
+                <span>PRODUCT TYPE</span>
+                <strong>
+                  {Array.isArray(product.subcategory)
+                    ? product.subcategory
+                        .map((slug) => getSubcategory(product.categorySlug, slug)?.name)
+                        .filter(Boolean)
+                        .join(" · ") || "GENERAL"
+                    : subcategory?.name || "GENERAL"}
+                </strong>
+              </div>
                 <div className="spec-row">
                   <span>BRAND</span>
                   <strong>{product.brand || "VARIOUS"}</strong>
