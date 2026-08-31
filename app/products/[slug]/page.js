@@ -23,7 +23,6 @@ export default async function ProductPage({ params }) {
   }
 
   const category = getCategory(product.categorySlug);
-  const subcategory = getSubcategory(product.categorySlug, product.subcategory);
 
   return (
     <>
@@ -47,7 +46,7 @@ export default async function ProductPage({ params }) {
                   <span>CATEGORY</span>
                   <strong>{category?.name || product.category}</strong>
                 </div>
-              <div>
+             <div>
                 <span>PRODUCT TYPE</span>
                 <strong>
                   {Array.isArray(product.subcategory)
@@ -55,7 +54,7 @@ export default async function ProductPage({ params }) {
                         .map((slug) => getSubcategory(product.categorySlug, slug)?.name)
                         .filter(Boolean)
                         .join(" · ") || "GENERAL"
-                    : subcategory?.name || "GENERAL"}
+                    : getSubcategory(product.categorySlug, product.subcategory)?.name || "GENERAL"}
                 </strong>
               </div>
                 <div className="spec-row">
