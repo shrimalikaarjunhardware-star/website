@@ -32,32 +32,91 @@ export function Footer() {
   return (
     <footer className="footer">
       <div className="footer-orange-bar" />
+
       <div className="container footer-main">
+
         <div className="footer-brand">
-          <img src="/images/logo.png" alt="Shri Mallikarjun Hardware & Paints" />
-          <p>Paints, hardware, tools and project essentials for Canacona and the surrounding area.</p>
+          <img
+            src="/images/logo.png"
+            alt="Shri Mallikarjun Hardware & Paints"
+          />
+
+          <p>
+            Paints, hardware, tools and project essentials for Canacona
+            and the surrounding area.
+          </p>
         </div>
+
         <div className="footer-col">
           <h3>SHOP</h3>
+
           <Link href="/products">Products</Link>
           <Link href="/categories">Categories</Link>
         </div>
+
         <div className="footer-col">
           <h3>COMPANY</h3>
+
           <Link href="/about">About</Link>
           <Link href="/contact">Contact</Link>
         </div>
+
         <div className="footer-col footer-contact">
           <h3>CONTACT</h3>
-          <span>{siteConfig.locations.map(l => l.shortName).join(" • ")}</span>
-          <a href={`tel:${siteConfig.phone}`}>{siteConfig.phoneDisplay}</a>
-          <a href={`https://wa.me/${siteConfig.whatsapp}`} target="_blank" rel="noreferrer">WhatsApp us</a>
-          <Link href="/contact">View both locations</Link>
+
+          {siteConfig.locations.map((location) => (
+            <div key={location.id} className="footer-location">
+
+              <strong>{location.shortName}</strong>
+
+              <address>
+                {location.address.map((line, index) => (
+                  <span key={index}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
+              </address>
+
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  location.mapQuery
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Get directions ↗
+              </a>
+            </div>
+          ))}
+
+          <a href={`tel:${siteConfig.phone}`}>
+            {siteConfig.phoneDisplay}
+          </a>
+
+          <a
+            href={`https://wa.me/${siteConfig.whatsapp}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            WhatsApp us
+          </a>
+
+          <Link href="/contact">
+            View both locations
+          </Link>
         </div>
+
       </div>
+
       <div className="container footer-bottom">
-        <span>© 2026 Shri Mallikarjun Hardware & Paints</span>
-        <span>Chaudi &amp; Batpal, Canacona, Goa</span>
+        <span>
+          © 2026 Shri Mallikarjun Hardware & Paints
+        </span>
+
+        <span>
+          Chaudi &amp; Batpal, Canacona, Goa
+        </span>
       </div>
     </footer>
   );
