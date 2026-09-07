@@ -1,9 +1,7 @@
 import "./globals.css";
 import { siteConfig } from "../lib/siteConfig";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://shri-malikaarjun-hardware.vercel.app";
+const siteUrl = "https://shrimallikarjunhardware.in";
 
 const metaImage = `${siteUrl}/images/seo-share.png`;
 
